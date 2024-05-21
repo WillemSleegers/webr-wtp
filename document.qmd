@@ -1,0 +1,79 @@
+---
+title: "Median WTP calculation"
+format: html
+output-file: index.html
+fig-dpi: 600
+webr: 
+  show-startup-message: true
+  packages: ['boot']
+  autoload-packages: true
+filters:
+  - webr
+---
+
+## Setup
+
+```{webr-r}
+#| autorun: true
+func <- function(x) plogis(-(Xb + b * x), lower.tail = FALSE)
+
+boot_median_wtp <- function(formula, data, indices) {
+  d <- data[indices, ]
+  fit <- glm(formula, data = d, family = binomial())
+
+  coefs <- coef(fit)
+  b <- coefs["price"]
+  Xb <- coefs["(Intercept)"]
+
+  return(-Xb / b)
+}
+```
+
+## Simulate data
+
+```{webr-r}
+# Parameters
+N <- 1000
+prices <- c(0.10, 0.25, 0.50, 1, 2, 5)
+wtp_mean <- 0.50
+wtp_sd <- 1
+
+# Create the data
+data <- data.frame(
+  price = sample(prices, size = N, replace = TRUE)
+)
+
+data$accept <- ifelse(
+  rnorm(N, mean = wtp_mean, sd = wtp_sd) > data$price,
+  1, 0
+)
+```
+
+## Analyze data
+
+### Run the model
+```{webr-r}
+model <- glm(accept ~ price, data = data, family = binomial())
+summary(model)
+```
+
+### Calculate median WTP
+```{webr-r}
+coefs <- coef(model)
+b <- coefs["price"]
+Xb <- coefs["(Intercept)"]
+
+-Xb / b # Median WTP
+```
+
+### Calculate median WTP confidence interval
+```{webr-r}
+results <- boot(
+  formula = accept ~ price,
+  data = data,
+  statistic = boot_median_wtp,
+  R = 1000
+)
+results
+boot.ci(results, type = "bca")
+```
