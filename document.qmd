@@ -77,7 +77,7 @@ summary(model)
 
 ### Calculate median WTP
 
-The median WTP is calculated dividing the coefficient of the intercept by the coefficient of the price; the sign is flipped to make it a positive result.
+The median WTP is calculated by dividing the coefficient of the intercept by the coefficient of the price; the sign is flipped to make it a positive result.
 
 ```{webr-r}
 coefs <- coef(model)
