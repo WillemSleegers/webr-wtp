@@ -11,7 +11,11 @@ filters:
   - webr
 ---
 
+This page contains code to simulate data for a WTP experiment and calculate the median WTP, including its confidence intervals. Make sure to run the code in order for each code block to work. You can edit the code (e.g., the parameters) on this page directly to see how the changes impact the results.
+
 ## Setup
+
+This setup code is run automatically when the page loads. It contains two functions that are used in the code sections below.
 
 ```{webr-r}
 #| autorun: true
@@ -25,11 +29,20 @@ boot_median_wtp <- function(formula, data, indices) {
   b <- coefs["price"]
   Xb <- coefs["(Intercept)"]
 
-  return(-Xb / b)
+  return(Xb / b * -1)
 }
 ```
 
 ## Simulate data
+
+Here you can set the parameters of the simulation:
+
+- `N`: The sample size
+- `prices`: The set of prices used in the study. A respondent will see one of these prices and are asked whether they accept or reject a price increase of this amount
+- `wtp_mean`: The mean of the population's willingness to pay.
+- `wtp_sd`: The standard devation of the population's willingness to pay.
+
+A data frame is created with `N` rows and two columns. The first column contains a randomly selected price increase (from `prices`) for each participant. The second column, added later, indicates whether the respondent accepts (1) or rejects (0) the price increase. This is done by randomly sampling a value from the WTP normal distribution (determine by `wtp_mean` and `wtp_sd`); if the sampled value is larger than the price, the respondent accepts, otherwise they reject the price increase.
 
 ```{webr-r}
 # Parameters
@@ -47,26 +60,37 @@ data$accept <- ifelse(
   rnorm(N, mean = wtp_mean, sd = wtp_sd) > data$price,
   1, 0
 )
+
+head(data)
 ```
 
 ## Analyze data
 
 ### Run the model
+
+The way to analyze this data is by running a logistic regression with whether or not the respondent accepts the price increase as the outcome and the price increase as the predictor.
+
 ```{webr-r}
 model <- glm(accept ~ price, data = data, family = binomial())
 summary(model)
 ```
 
 ### Calculate median WTP
+
+The median WTP is calculated dividing the coefficient of the intercept by the coefficient of the price; the sign is flipped to make it a positive result.
+
 ```{webr-r}
 coefs <- coef(model)
 b <- coefs["price"]
 Xb <- coefs["(Intercept)"]
 
--Xb / b # Median WTP
+Xb / b * -1 # Median WTP
 ```
 
 ### Calculate median WTP confidence interval
+
+Confidence intervals are calculated by bootstrapping the previous step 1000 times.
+
 ```{webr-r}
 results <- boot(
   formula = accept ~ price,
@@ -74,6 +98,6 @@ results <- boot(
   statistic = boot_median_wtp,
   R = 1000
 )
-results
-boot.ci(results, type = "bca")
+
+boot.ci(results, conf = 0.95, type = "bca")
 ```

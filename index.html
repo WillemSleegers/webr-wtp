@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Hour estimation using WebR</title>
+<title>Median WTP calculation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -238,7 +238,7 @@ globalThis.qwebrCustomizedWebROptions = {
 };
 
 // Store cell data
-globalThis.qwebrCellDetails = [{"code":"func <- function(x) plogis(-(Xb + b * x), lower.tail = FALSE)\n\nboot_median_wtp <- function(formula, data, indices) {\n  d <- data[indices, ]\n  fit <- glm(formula, data = d, family = binomial())\n\n  coefs <- coef(fit)\n  b <- coefs[\"price\"]\n  Xb <- coefs[\"(Intercept)\"]\n\n  return(-Xb / b)\n}","options":{"fig-width":7,"editor-max-height":"","dpi":72,"label":"unnamed-chunk-1","comment":"","read-only":"false","warning":"true","out-height":"","output":"true","autorun":"true","context":"interactive","results":"markup","out-width":"700px","fig-height":5,"classes":"","editor-font-scale":1,"message":"true","fig-cap":"","editor-quick-suggestions":"false"},"id":1},{"code":"# Parameters\nN <- 1000\nprices <- c(0.10, 0.25, 0.50, 1, 2, 5)\nwtp_mean <- 0.50\nwtp_sd <- 1\n\n# Create the data\ndata <- data.frame(\n  price = sample(prices, size = N, replace = TRUE)\n)\n\ndata$accept <- ifelse(\n  rnorm(N, mean = wtp_mean, sd = wtp_sd) > data$price,\n  1, 0\n)","options":{"fig-width":7,"editor-max-height":"","dpi":72,"label":"unnamed-chunk-2","comment":"","read-only":"false","warning":"true","out-height":"","output":"true","autorun":"false","context":"interactive","results":"markup","out-width":"700px","fig-height":5,"classes":"","editor-font-scale":1,"message":"true","fig-cap":"","editor-quick-suggestions":"false"},"id":2},{"code":"model <- glm(accept ~ price, data = data, family = binomial())\nsummary(model)","options":{"fig-width":7,"editor-max-height":"","dpi":72,"label":"unnamed-chunk-3","comment":"","read-only":"false","warning":"true","out-height":"","output":"true","autorun":"false","context":"interactive","results":"markup","out-width":"700px","fig-height":5,"classes":"","editor-font-scale":1,"message":"true","fig-cap":"","editor-quick-suggestions":"false"},"id":3},{"code":"coefs <- coef(model)\nb <- coefs[\"price\"]\nXb <- coefs[\"(Intercept)\"]\n\n-Xb / b # Median WTP","options":{"fig-width":7,"editor-max-height":"","dpi":72,"label":"unnamed-chunk-4","comment":"","read-only":"false","warning":"true","out-height":"","output":"true","autorun":"false","context":"interactive","results":"markup","out-width":"700px","fig-height":5,"classes":"","editor-font-scale":1,"message":"true","fig-cap":"","editor-quick-suggestions":"false"},"id":4},{"code":"results <- boot(\n  formula = accept ~ price,\n  data = data,\n  statistic = boot_median_wtp,\n  R = 1000\n)\nresults\nboot.ci(results, type = \"bca\")","options":{"fig-width":7,"editor-max-height":"","dpi":72,"label":"unnamed-chunk-5","comment":"","read-only":"false","warning":"true","out-height":"","output":"true","autorun":"false","context":"interactive","results":"markup","out-width":"700px","fig-height":5,"classes":"","editor-font-scale":1,"message":"true","fig-cap":"","editor-quick-suggestions":"false"},"id":5}];
+globalThis.qwebrCellDetails = [{"options":{"classes":"","context":"interactive","editor-quick-suggestions":"false","fig-width":7,"autorun":"true","label":"unnamed-chunk-1","editor-max-height":"","fig-cap":"","results":"markup","fig-height":5,"editor-font-scale":1,"out-width":"700px","message":"true","dpi":72,"warning":"true","comment":"","out-height":"","output":"true","read-only":"false"},"code":"func <- function(x) plogis(-(Xb + b * x), lower.tail = FALSE)\n\nboot_median_wtp <- function(formula, data, indices) {\n  d <- data[indices, ]\n  fit <- glm(formula, data = d, family = binomial())\n\n  coefs <- coef(fit)\n  b <- coefs[\"price\"]\n  Xb <- coefs[\"(Intercept)\"]\n\n  return(Xb / b * -1)\n}","id":1},{"options":{"classes":"","context":"interactive","editor-quick-suggestions":"false","fig-width":7,"autorun":"false","label":"unnamed-chunk-2","editor-max-height":"","fig-cap":"","results":"markup","fig-height":5,"editor-font-scale":1,"out-width":"700px","message":"true","dpi":72,"warning":"true","comment":"","out-height":"","output":"true","read-only":"false"},"code":"# Parameters\nN <- 1000\nprices <- c(0.10, 0.25, 0.50, 1, 2, 5)\nwtp_mean <- 0.50\nwtp_sd <- 1\n\n# Create the data\ndata <- data.frame(\n  price = sample(prices, size = N, replace = TRUE)\n)\n\ndata$accept <- ifelse(\n  rnorm(N, mean = wtp_mean, sd = wtp_sd) > data$price,\n  1, 0\n)\n\nhead(data)","id":2},{"options":{"classes":"","context":"interactive","editor-quick-suggestions":"false","fig-width":7,"autorun":"false","label":"unnamed-chunk-3","editor-max-height":"","fig-cap":"","results":"markup","fig-height":5,"editor-font-scale":1,"out-width":"700px","message":"true","dpi":72,"warning":"true","comment":"","out-height":"","output":"true","read-only":"false"},"code":"model <- glm(accept ~ price, data = data, family = binomial())\nsummary(model)","id":3},{"options":{"classes":"","context":"interactive","editor-quick-suggestions":"false","fig-width":7,"autorun":"false","label":"unnamed-chunk-4","editor-max-height":"","fig-cap":"","results":"markup","fig-height":5,"editor-font-scale":1,"out-width":"700px","message":"true","dpi":72,"warning":"true","comment":"","out-height":"","output":"true","read-only":"false"},"code":"coefs <- coef(model)\nb <- coefs[\"price\"]\nXb <- coefs[\"(Intercept)\"]\n\nXb / b * -1 # Median WTP","id":4},{"options":{"classes":"","context":"interactive","editor-quick-suggestions":"false","fig-width":7,"autorun":"false","label":"unnamed-chunk-5","editor-max-height":"","fig-cap":"","results":"markup","fig-height":5,"editor-font-scale":1,"out-width":"700px","message":"true","dpi":72,"warning":"true","comment":"","out-height":"","output":"true","read-only":"false"},"code":"results <- boot(\n  formula = accept ~ price,\n  data = data,\n  statistic = boot_median_wtp,\n  R = 1000\n)\n\nboot.ci(results, conf = 0.95, type = \"bca\")","id":5}];
 
 </script>
 <script type="module">
@@ -1313,7 +1313,7 @@ globalThis.qwebrCreateMonacoEditorInstance = function (cellData) {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hour estimation using WebR</h1>
+<h1 class="title">Median WTP calculation</h1>
 </div>
 
 
@@ -1330,13 +1330,23 @@ globalThis.qwebrCreateMonacoEditorInstance = function (cellData) {
 </header>
 
 
+<p>This page contains code to simulate data for a WTP experiment and calculate the median WTP, including its confidence intervals. Make sure to run the code in order for each code block to work. You can edit the code (e.g., the parameters) on this page directly to see how the changes impact the results.</p>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>This setup code is run automatically when the page loads. It contains two functions that are used in the code sections below.</p>
 <div id="qwebr-insertion-location-1"></div>
 <noscript>Please enable JavaScript to experience the dynamic code cell content on this page.</noscript>
 </section>
 <section id="simulate-data" class="level2">
 <h2 class="anchored" data-anchor-id="simulate-data">Simulate data</h2>
+<p>Here you can set the parameters of the simulation:</p>
+<ul>
+<li><code>N</code>: The sample size</li>
+<li><code>prices</code>: The set of prices used in the study. A respondent will see one of these prices and are asked whether they accept or reject a price increase of this amount</li>
+<li><code>wtp_mean</code>: The mean of the population’s willingness to pay.</li>
+<li><code>wtp_sd</code>: The standard devation of the population’s willingness to pay.</li>
+</ul>
+<p>A data frame is created with <code>N</code> rows and two columns. The first column contains a randomly selected price increase (from <code>prices</code>) for each participant. The second column, added later, indicates whether the respondent accepts (1) or rejects (0) the price increase. This is done by randomly sampling a value from the WTP normal distribution (determine by <code>wtp_mean</code> and <code>wtp_sd</code>); if the sampled value is larger than the price, the respondent accepts, otherwise they reject the price increase.</p>
 <div id="qwebr-insertion-location-2"></div>
 <noscript>Please enable JavaScript to experience the dynamic code cell content on this page.</noscript>
 </section>
@@ -1344,16 +1354,19 @@ globalThis.qwebrCreateMonacoEditorInstance = function (cellData) {
 <h2 class="anchored" data-anchor-id="analyze-data">Analyze data</h2>
 <section id="run-the-model" class="level3">
 <h3 class="anchored" data-anchor-id="run-the-model">Run the model</h3>
+<p>The way to analyze this data is by running a logistic regression with whether or not the respondent accepts the price increase as the outcome and the price increase as the predictor.</p>
 <div id="qwebr-insertion-location-3"></div>
 <noscript>Please enable JavaScript to experience the dynamic code cell content on this page.</noscript>
 </section>
 <section id="calculate-median-wtp" class="level3">
 <h3 class="anchored" data-anchor-id="calculate-median-wtp">Calculate median WTP</h3>
+<p>The median WTP is calculated dividing the coefficient of the intercept by the coefficient of the price; the sign is flipped to make it a positive result.</p>
 <div id="qwebr-insertion-location-4"></div>
 <noscript>Please enable JavaScript to experience the dynamic code cell content on this page.</noscript>
 </section>
 <section id="calculate-median-wtp-confidence-interval" class="level3">
 <h3 class="anchored" data-anchor-id="calculate-median-wtp-confidence-interval">Calculate median WTP confidence interval</h3>
+<p>Confidence intervals are calculated by bootstrapping the previous step 1000 times.</p>
 <div id="qwebr-insertion-location-5"></div>
 <noscript>Please enable JavaScript to experience the dynamic code cell content on this page.</noscript>
 </section>
