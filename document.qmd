@@ -57,7 +57,7 @@ data <- data.frame(
 )
 
 data$accept <- ifelse(
-  rnorm(N, mean = wtp_mean, sd = wtp_sd) > data$price,
+  rnorm(N, mean = wtp_mean, sd = wtp_sd) >= data$price,
   1, 0
 )
 
